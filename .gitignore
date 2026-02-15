@@ -1,0 +1,5 @@
+_sprint_docs/
+target/
+*.class
+*.log
+.DS_Store
