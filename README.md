@@ -184,5 +184,3 @@ After wrapper files are restored, these commands should work:
 - Confirm database/user/password values in `application.properties`.
 - Confirm the database exists and user has privileges.
 
----
-If you want, I can next generate a starter implementation for Sprint 2 (`Book` entity, repository, service, controller, and `GET /api/books`) so the README and code match end-to-end.
