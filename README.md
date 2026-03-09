@@ -1,188 +1,191 @@
-# Geek Text API (Team 25)
+# Geek Text API - Team 25
 
-Backend API for the Geek Text online bookstore project (CEN 4010), built with Spring Boot and PostgreSQL.
+Spring Boot backend for CEN 4010 Geek Text project. This repository now includes the full Sprint 2 minimum backend deliverables.
 
-## Table of Contents
-1. [Project Overview](#project-overview)
-2. [Current Repository Status](#current-repository-status)
-3. [Tech Stack](#tech-stack)
-4. [Team and Feature Ownership](#team-and-feature-ownership)
-5. [Planned Sprint 2 Deliverables](#planned-sprint-2-deliverables)
-6. [Repository Structure](#repository-structure)
-7. [Prerequisites](#prerequisites)
-8. [Local Setup](#local-setup)
-9. [Run and Test](#run-and-test)
-10. [Configuration](#configuration)
-11. [Branching and Workflow](#branching-and-workflow)
-12. [Documentation](#documentation)
-13. [Troubleshooting](#troubleshooting)
+## Sprint 2 Status
 
-## Project Overview
-Geek Text is a web application project for an online bookstore that targets technology-focused books.
-
-Core feature areas from the course checklist:
-- Book Browsing and Sorting
-- Profile Management
-- Shopping Cart
-- Book Details
-- Book Rating and Commenting
-- Wish List Management
-
-## Current Repository Status
-This repository currently contains a Spring Boot project scaffold and sprint documentation.
-
-Implemented in code right now:
-- Spring Boot application bootstrap class
-- Maven dependency setup
-- Basic application configuration file
-
-Not yet present in this repo (as code):
-- Entities/models (for example `Book`)
-- Repositories/services/controllers
-- Public REST endpoints (for example `GET /api/books`)
-- Database seed scripts
+Implemented:
+- Book entity and table mapping (`books`)
+- PostgreSQL datasource configuration
+- Dummy data seeding at startup (10 books)
+- Example REST endpoint: `GET /api/books`
 
 ## Tech Stack
+
 - Java 21
 - Spring Boot 4.0.2
 - Spring Web MVC
-- Spring Data JPA
-- Spring Validation
-- PostgreSQL (runtime dependency)
-- Maven build system
+- Spring Data JPA (Hibernate)
+- PostgreSQL
+- Maven
 
-## Team and Feature Ownership
-Team: Group 25
+## Team Ownership (from Sprint 1)
 
-Feature ownership from Sprint 1 architecture summary:
 - Book Browsing and Sorting: Jairo Zapata
 - Book Details: Dereck Zolotoff
 - Profile Management: Bibek Yadav
 - Shopping Cart: Anna Zaidze
-- Book Rating and Commenting: Unassigned
-- Wish List Management: Unassigned
 
-## Planned Sprint 2 Deliverables
-Based on sprint planning docs:
-- Ensure Spring Boot backend runs locally for all members
-- Configure and validate PostgreSQL connectivity
-- Create `Book` entity/table (data model)
-- Seed database with dummy book records
-- Implement and test an example `GET /api/books` endpoint
-- Validate through Postman and record demo video
+## Code Structure
 
-## Repository Structure
 ```text
-.
-├── src/main/java/com/bookstore/geek_text/
-│   └── GeekTextApplication.java
-├── src/main/resources/
-│   └── application.properties
-├── src/test/java/com/bookstore/geek_text/
-│   └── GeekTextApplicationTests.java
-├── pom.xml
-├── mvnw
-├── mvnw.cmd
-├── HELP.md
-└── _sprint_docs/
+src/main/java/com/bookstore/geek_text/
+├── GeekTextApplication.java
+└── book/
+    ├── Book.java
+    ├── BookRepository.java
+    ├── BookController.java
+    └── BookDataSeeder.java
+
+src/main/resources/
+└── application.properties
 ```
 
-## Prerequisites
-Install these before running locally:
+## Implemented API
+
+### Get All Books
+
+- Method: `GET`
+- Path: `/api/books` (also available as `/books`)
+- Response: `200 OK` + JSON array
+
+Example:
+
+```json
+[
+  {
+    "id": 1,
+    "title": "Clean Code",
+    "author": "Robert C. Martin",
+    "genre": "Software Engineering",
+    "price": 39.99,
+    "copiesSold": 8500
+  }
+]
+```
+
+## Detailed Setup Instructions
+
+### 1. Prerequisites
+
+Install:
 - JDK 21
-- PostgreSQL 14+ (or compatible version)
-- Maven 3.9+ (currently required; see wrapper note below)
+- PostgreSQL (14+ recommended)
+- Maven 3.9+
 
-## Local Setup
-1. Clone the repository.
-2. Create a PostgreSQL database for this project.
-3. Configure datasource settings in `src/main/resources/application.properties`.
-4. Run the app.
+Check versions:
 
-Example PostgreSQL setup:
+```bash
+java -version
+mvn -version
+```
+
+### 2. Create Database and User
+
+Open PostgreSQL and run:
+
 ```sql
 CREATE DATABASE geek_text;
 CREATE USER geek_text_user WITH ENCRYPTED PASSWORD 'change_me';
 GRANT ALL PRIVILEGES ON DATABASE geek_text TO geek_text_user;
 ```
 
-## Run and Test
-Because wrapper config is currently missing, use Maven directly after installing it.
+### 3. Configure Application
 
-Run application:
+Default config in `src/main/resources/application.properties`:
+
+```properties
+spring.datasource.url=jdbc:postgresql://localhost:5432/geek_text
+spring.datasource.username=geek_text_user
+spring.datasource.password=Geektext@master
+spring.jpa.hibernate.ddl-auto=update
+```
+
+You can override values via environment variables:
+
+```bash
+export SPRING_DATASOURCE_URL=jdbc:postgresql://localhost:5432/geek_text
+export SPRING_DATASOURCE_USERNAME=geek_text_user
+export SPRING_DATASOURCE_PASSWORD=Geektext@master
+```
+
+### 4. Run the Backend
+
+Current repository issue:
+- `./mvnw` cannot run because `.mvn/wrapper/*` is missing.
+
+So use Maven directly:
+
 ```bash
 mvn spring-boot:run
 ```
 
-Run tests:
-```bash
-mvn test
-```
+If you want wrapper support restored:
 
-## Configuration
-Current `application.properties` only contains:
-```properties
-spring.application.name=geek-text
-```
-
-Recommended local development config (adjust credentials):
-```properties
-spring.application.name=geek-text
-
-spring.datasource.url=jdbc:postgresql://localhost:5432/geek_text
-spring.datasource.username=geek_text_user
-spring.datasource.password=change_me
-
-spring.jpa.hibernate.ddl-auto=update
-spring.jpa.show-sql=true
-spring.jpa.properties.hibernate.format_sql=true
-
-server.port=8080
-```
-
-## Branching and Workflow
-Suggested workflow for this repo:
-1. Create a feature branch from main.
-2. Implement one scoped story per branch.
-3. Open a pull request with:
-   - Problem statement
-   - Scope of changes
-   - Test evidence (logs, screenshots, Postman output)
-4. Merge after review.
-
-Naming examples:
-- `feature/book-entity`
-- `feature/books-get-endpoint`
-- `chore/db-seed-data`
-
-## Documentation
-Project documentation in this workspace:
-- Sprint docs: `_sprint_docs/`
-- Spring starter notes: `HELP.md`
-
-## Troubleshooting
-### `./mvnw` fails with missing wrapper properties
-Current issue in this repo:
-- `.mvn/wrapper/maven-wrapper.properties` is missing
-- `.mvn/wrapper/maven-wrapper.jar` is missing
-
-Fix options:
-1. Install Maven and run:
 ```bash
 mvn -N wrapper:wrapper
 ```
-2. Or restore `.mvn/wrapper/` from a known good Spring Boot project.
 
-After wrapper files are restored, these commands should work:
+Then you can run:
+
 ```bash
 ./mvnw spring-boot:run
-./mvnw test
 ```
 
-### PostgreSQL connection errors
-- Verify PostgreSQL service is running.
-- Confirm database/user/password values in `application.properties`.
-- Confirm the database exists and user has privileges.
+### 5. Verify Sprint 2 Acceptance Criteria
 
----
-If you want, I can next generate a starter implementation for Sprint 2 (`Book` entity, repository, service, controller, and `GET /api/books`) so the README and code match end-to-end.
+#### A. App startup
+
+Confirm app starts cleanly and listens on port `8080`.
+
+#### B. Table creation
+
+Run this SQL:
+
+```sql
+SELECT id, title, author, genre, price, copies_sold FROM books;
+```
+
+Expected:
+- `books` table exists
+- 10 seeded rows exist after first startup
+
+#### C. Endpoint test (curl)
+
+```bash
+curl -s http://localhost:8080/api/books
+curl -s http://localhost:8080/books
+```
+
+Expected:
+- HTTP `200`
+- JSON list from database (not hardcoded)
+
+#### D. Endpoint test (Postman)
+
+1. Create request `GET http://localhost:8080/api/books` (or `/books`)
+2. Click `Send`
+3. Confirm status `200 OK`
+4. Confirm JSON body contains seeded records
+
+## What Was Added for Sprint 2
+
+- `Book` JPA entity with fields:
+  - `id`
+  - `title`
+  - `author`
+  - `genre`
+  - `price`
+  - `copiesSold`
+- `BookRepository` using `JpaRepository`
+- `BookController` exposing `GET /api/books`
+- `BookDataSeeder` (`CommandLineRunner`) to insert sample data only when table is empty
+- PostgreSQL and JPA configuration in `application.properties`
+
+## Next Steps (Sprint 3+)
+
+Suggested next implementation items:
+1. Add `GET /api/books/{id}`
+2. Add filtering endpoints (genre/top sellers/rating threshold)
+3. Add feature-specific services for each team owner
+4. Add integration tests for controller + repository
