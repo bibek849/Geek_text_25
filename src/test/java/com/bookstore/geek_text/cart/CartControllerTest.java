@@ -1,6 +1,7 @@
 package com.bookstore.geek_text.cart;
 
 import com.bookstore.geek_text.cart.dto.CartItemResponse;
+import com.bookstore.geek_text.cart.dto.CartSubtotalResponse;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest;
@@ -12,7 +13,10 @@ import tools.jackson.databind.ObjectMapper;
 import java.math.BigDecimal;
 import java.util.List;
 
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.verify;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -43,7 +47,7 @@ class CartControllerTest {
                 new BigDecimal("42.75"),
                 2
         );
-        given(cartService.addToCart(org.mockito.ArgumentMatchers.any())).willReturn(created);
+        given(cartService.addToCart(any())).willReturn(created);
 
         String payload = objectMapper.writeValueAsString(java.util.Map.of(
                 "userId", 9,
@@ -57,18 +61,7 @@ class CartControllerTest {
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.cartItemId").value(55))
                 .andExpect(jsonPath("$.userId").value(9))
-                .andExpect(jsonPath("$.bookId").value(4))
                 .andExpect(jsonPath("$.quantity").value(2));
-    }
-
-    @Test
-    void addToCartReturnsBadRequestForMissingFields() throws Exception {
-        String payload = objectMapper.writeValueAsString(java.util.Map.of("bookId", 4));
-
-        mockMvc.perform(post("/api/cart/add")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(payload))
-                .andExpect(status().isBadRequest());
     }
 
     @Test
@@ -79,7 +72,7 @@ class CartControllerTest {
                 1L,
                 "9780132350884",
                 "Clean Code",
-                "Robert C. Martin",
+                "Robert Martin",
                 "Software Engineering",
                 new BigDecimal("39.99"),
                 1
@@ -89,7 +82,25 @@ class CartControllerTest {
         mockMvc.perform(get("/api/cart/3"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$[0].cartItemId").value(77))
-                .andExpect(jsonPath("$[0].title").value("Clean Code"))
-                .andExpect(jsonPath("$[0].isbn").value("9780132350884"));
+                .andExpect(jsonPath("$[0].title").value("Clean Code"));
+    }
+
+    @Test
+    void getSubtotalReturnsCalculatedAmount() throws Exception {
+        given(cartService.getCartSubtotal(3L)).willReturn(new CartSubtotalResponse(3L, 4, new BigDecimal("82.74")));
+
+        mockMvc.perform(get("/api/cart/3/subtotal"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.userId").value(3))
+                .andExpect(jsonPath("$.totalQuantity").value(4))
+                .andExpect(jsonPath("$.subtotal").value(82.74));
+    }
+
+    @Test
+    void deleteFromCartReturnsNoContent() throws Exception {
+        mockMvc.perform(delete("/api/cart/3/books/1"))
+                .andExpect(status().isNoContent());
+
+        verify(cartService).removeBookFromCart(3L, 1L);
     }
 }

@@ -1,6 +1,7 @@
 package com.bookstore.geek_text.cart;
 
 import com.bookstore.geek_text.book.Book;
+import com.bookstore.geek_text.profile.UserAccount;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -23,8 +24,9 @@ public class CartItem {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "user_id", nullable = false)
-    private Long userId;
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "user_id", nullable = false)
+    private UserAccount user;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "book_id", nullable = false)
@@ -37,8 +39,8 @@ public class CartItem {
         // Required by JPA
     }
 
-    public CartItem(Long userId, Book book, Integer quantity) {
-        this.userId = userId;
+    public CartItem(UserAccount user, Book book, Integer quantity) {
+        this.user = user;
         this.book = book;
         this.quantity = quantity;
     }
@@ -47,12 +49,12 @@ public class CartItem {
         return id;
     }
 
-    public Long getUserId() {
-        return userId;
+    public UserAccount getUser() {
+        return user;
     }
 
-    public void setUserId(Long userId) {
-        this.userId = userId;
+    public void setUser(UserAccount user) {
+        this.user = user;
     }
 
     public Book getBook() {
