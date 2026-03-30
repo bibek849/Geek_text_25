@@ -157,35 +157,3 @@ curl -s http://localhost:8080/api/books
 curl -s http://localhost:8080/books
 ```
 
-Expected:
-- HTTP `200`
-- JSON list from database (not hardcoded)
-
-#### D. Endpoint test (Postman)
-
-1. Create request `GET http://localhost:8080/api/books` (or `/books`)
-2. Click `Send`
-3. Confirm status `200 OK`
-4. Confirm JSON body contains seeded records
-
-## What Was Added for Sprint 2
-
-- `Book` JPA entity with fields:
-  - `id`
-  - `title`
-  - `author`
-  - `genre`
-  - `price`
-  - `copiesSold`
-- `BookRepository` using `JpaRepository`
-- `BookController` exposing `GET /api/books`
-- `BookDataSeeder` (`CommandLineRunner`) to insert sample data only when table is empty
-- PostgreSQL and JPA configuration in `application.properties`
-
-## Next Steps (Sprint 3+)
-
-Suggested next implementation items:
-1. Add `GET /api/books/{id}`
-2. Add filtering endpoints (genre/top sellers/rating threshold)
-3. Add feature-specific services for each team owner
-4. Add integration tests for controller + repository
