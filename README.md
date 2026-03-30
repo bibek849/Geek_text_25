@@ -197,10 +197,3 @@ export PATH="$JAVA_HOME/bin:$PATH"
 ./mvnw test
 ```
 
-The tests use H2 and do not require a local PostgreSQL instance.
-
-## Notes
-
-- Seed data now includes authors, books, sample users, ratings, and comments.
-- Existing book rows are backfilled with missing ISBN, description, author, publisher, year, and rating metadata on startup.
-- Team sprint artifacts are under `_sprint_docs/`.
