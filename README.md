@@ -2,7 +2,7 @@
 
 Spring Boot backend for the CEN 4010 Geek Text project.
 
-The codebase now covers the checklist-backed backend scope needed going into Sprint 5:
+Code coverage for Sprint 5:
 - Book browsing and sorting
 - Book details and author management
 - Profile management and credit cards
